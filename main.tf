@@ -14,7 +14,7 @@ provider "proxmox" {
   pm_api_token_secret = var.pm_api_token_secret
 }
 
-resource "proxmox_vm_qemu" "k8s_node" {
+resource "proxmox_vm_qemu" "vm" {
   for_each    = var.vms
   name        = each.key
   target_node = var.pm_node

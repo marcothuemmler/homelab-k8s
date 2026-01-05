@@ -26,11 +26,11 @@ variable "sshkeys" {}
 variable "vms" {
   description = "Map of VM configurations"
   type = map(object({
-    ciuser      = string
+    ciuser      = optional(string, "ubuntu")
     ip          = string # required
-    memory      = number # required
-    cpu_cores   = number # required
-    cpu_sockets = number # required
-    disk_size   = string # required
+    memory      = optional(number, 2048)
+    cpu_cores   = optional(number, 2)
+    cpu_sockets = optional(number, 1)
+    disk_size   = optional(string, "20G")
   }))
 }
