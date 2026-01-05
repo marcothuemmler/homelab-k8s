@@ -1,0 +1,17 @@
+pm_api_token_id = "your-token-id"
+pm_api_token_secret = "your-token-secret"
+pm_api_url  = "https://proxmox.example.com:8006/api2/json"
+pm_node     = "proxmox"
+gateway_ip  = "192.168.1.1"
+sshkeys     = ""
+
+vms = {
+  "node1" = {
+    ciuser      = "exampleuser"
+    ip          = "192.168.1.101/24"
+    memory      = 2048
+    cpu_cores   = 2
+    cpu_sockets = 1
+    disk_size   = "20G"
+  }
+}

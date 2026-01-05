@@ -1,0 +1,9 @@
+# Terraform state & local config
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+
+# Editor/backup files
+*.swp
+*.bak
