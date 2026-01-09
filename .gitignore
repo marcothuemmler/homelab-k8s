@@ -1,7 +1,7 @@
 # Terraform state & local config
-.terraform/
-terraform.tfstate
-terraform.tfstate.backup
+**/.terraform/
+*.tfstate
+*.tfstate.backup
 *.tfvars
 *.tfstate.lock.info
 

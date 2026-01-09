@@ -21,7 +21,9 @@ variable "gateway_ip" {
   type = string # required
 }
 
-variable "sshkeys" {}
+variable "sshkeys" {
+  type = string
+}
 
 variable "vms" {
   description = "Map of VM configurations"

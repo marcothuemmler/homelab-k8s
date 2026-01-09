@@ -1,19 +1,3 @@
-terraform {
-  required_providers {
-    proxmox = {
-      source  = "Telmate/proxmox"
-      version = "3.0.2-rc07"
-    }
-  }
-  required_version = "~> 1.14"
-}
-
-provider "proxmox" {
-  pm_api_url          = var.pm_api_url
-  pm_api_token_id     = var.pm_api_token_id
-  pm_api_token_secret = var.pm_api_token_secret
-}
-
 resource "proxmox_vm_qemu" "vm" {
   for_each    = var.vms
   name        = each.key
