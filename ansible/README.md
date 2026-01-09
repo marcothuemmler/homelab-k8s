@@ -6,9 +6,23 @@ The main playbook (`cluster.yml`) configures all nodes with containerd and K8s c
 
 ---
 
-## Usage
+## Prerequisites
 
-Edit `inventory.ini` with your VM IPs:
+- Ansible 2.20+
+- Ubuntu 24.04 VMs (provisioned via Terraform - see `../terraform/`)
+- SSH access with sudo privileges
+
+---
+
+## Setup
+
+1. Copy the example inventory:
+
+```bash
+cp inventory.ini.example inventory.ini
+```
+
+2. Edit `inventory.ini` with your VM IPs:
 
 ```ini
 [k8s_master]
@@ -17,6 +31,20 @@ k8s-master ansible_host=192.168.1.10
 [k8s_workers]
 k8s-worker1 ansible_host=192.168.1.11
 k8s-worker2 ansible_host=192.168.1.12
+
+[k8s_nodes:children]
+k8s_master
+k8s_workers
+```
+
+---
+
+## Usage
+
+Run preflight checks to verify connectivity:
+
+```bash
+ansible-playbook preflight.yml
 ```
 
 Deploy the cluster:
@@ -46,11 +74,3 @@ kubectl get nodes
 
 **Worker nodes:**
 - `k8s_worker` - Joins workers to the cluster using the token from master
-
----
-
-## Requirements
-
-- Ansible 2.20+
-- Ubuntu 24.04 VMs (provisioned via Terraform - see `../terraform/`)
-- SSH access with sudo privileges

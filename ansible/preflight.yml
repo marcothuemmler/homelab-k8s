@@ -1,0 +1,12 @@
+---
+- name: Preflight checks
+  hosts: k8s_nodes
+  gather_facts: no
+  tasks:
+    - name: Wait for SSH to be ready
+      wait_for_connection:
+        timeout: 300
+        delay: 10
+
+    - name: Verify connectivity
+      ping:

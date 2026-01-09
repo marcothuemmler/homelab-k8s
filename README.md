@@ -46,6 +46,24 @@ This project automates the full lifecycle of deploying a Kubernetes cluster in a
 
 ---
 
+## Quick Start
+
+Use the Makefile for end-to-end deployment:
+
+```bash
+make all           # Provision VMs + deploy K8s cluster
+```
+
+Or run individual steps:
+
+```bash
+make init          # Initialize Terraform
+make apply         # Provision VMs
+make preflight     # Verify SSH connectivity
+make deploy        # Deploy K8s cluster
+make clean         # Destroy all infrastructure
+```
+
 ## Getting Started
 
 See the individual component READMEs for detailed setup instructions:

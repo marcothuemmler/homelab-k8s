@@ -1,4 +1,4 @@
-.PHONY: all init plan apply deploy clean
+.PHONY: all init plan apply preflight deploy clean
 
 all: apply deploy
 
@@ -11,7 +11,10 @@ plan:
 apply:
 	cd terraform && terraform apply -auto-approve
 
-deploy:
+preflight:
+	cd ansible && ansible-playbook preflight.yml
+
+deploy: preflight
 	cd ansible && ansible-playbook cluster.yml
 
 clean:
