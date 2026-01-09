@@ -1,71 +1,77 @@
+# Proxmox + Kubernetes Homelab
+
 ![Proxmox VE](https://img.shields.io/badge/Proxmox%20VE-9.0.11-FF0000?logo=proxmox&logoColor=white)
 ![Terraform](https://img.shields.io/badge/Terraform-1.14-623CE6?logo=terraform&logoColor=white)
+![Ansible](https://img.shields.io/badge/Ansible-2.20+-EE0000?logo=ansible&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-1.35+-326CE5?logo=kubernetes&logoColor=white)
 ![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04-orange?logo=ubuntu&logoColor=white)
 
-# Proxmox Terraform Config
+Automated Kubernetes cluster deployment on Proxmox VE using infrastructure-as-code.
 
-This repo contains Terraform and shell scripts for provisioning Ubuntu 24.04 VMs in a Proxmox environment.  
-
-It automates:
-
-* Creating a reusable cloud-init template
-* Deploying VMs from that template via Terraform
-* Automated setup using cloud-init
-
-*Workflow:* `Ubuntu cloud image → cloud-init template → Terraform → Proxmox VMs`
-
-See [Terraform docs](https://developer.hashicorp.com/terraform/docs) and [cloud-init docs](https://cloudinit.readthedocs.io/en/latest/) for more details.
+Combines Terraform for VM provisioning and Ansible for cluster configuration to deliver a reproducible K8s setup.
 
 ---
 
-## Prerequisites
+## Overview
 
-* [Proxmox VE 9+](https://www.proxmox.com/en/proxmox-ve)
-* [Terraform 1.14+](https://www.terraform.io/)
-* [Ubuntu 24.04 Cloud Image](https://cloud-images.ubuntu.com/releases/24.04/)
+This project automates the full lifecycle of deploying a Kubernetes cluster in a Proxmox homelab:
 
----
+1. **Template Creation** - Build Ubuntu 24.04 cloud-init templates for consistent VM base images
+2. **Infrastructure Provisioning** - Deploy VMs with Terraform using declarative configuration
+3. **Cluster Configuration** - Install and configure Kubernetes components with Ansible
 
-## Template Creation
-
-Download the Ubuntu 24.04 cloud image and run:
-
-```bash
-./create-template.sh
-```
-
-This will:
-
-* Create a VM configured for cloud-init
-* Import the Ubuntu 24.04 cloud image
-* Convert the VM into a reusable template
+**Tech Stack:**
+* **Terraform** - VM provisioning and infrastructure management
+* **Ansible** - Configuration management and K8s deployment
+* **Proxmox VE** - Virtualization platform
+* **Ubuntu 24.04** - Base OS with cloud-init
+* **containerd** - Container runtime
+* **Kubernetes** - Container orchestration
 
 ---
 
-## Deploying VMs with Terraform
+## Project Structure
 
-1. Copy the example variables file:
-
-```bash
-cp terraform.tfvars.example terraform.tfvars
+```
+.
+├── terraform/          # VM provisioning with Terraform
+│   ├── main.tf         # VM resource definitions
+│   ├── variables.tf    # Input variables
+│   └── README.md       # Detailed Terraform docs
+└── ansible/            # K8s cluster configuration
+    ├── cluster.yml     # Main playbook
+    ├── roles/          # Ansible roles (common, containerd, k8s)
+    └── README.md       # Detailed Ansible docs
 ```
 
-2. Fill in your **Proxmox API token**, gateway IP, SSH keys, and VM details in `terraform.tfvars`.
+---
 
-3. Initialize Terraform:
+## Getting Started
 
-```bash
-terraform init
+See the individual component READMEs for detailed setup instructions:
+
+1. **[Terraform Setup](terraform/README.md)** - Create templates and provision VMs
+2. **[Ansible Setup](ansible/README.md)** - Deploy and configure Kubernetes cluster
+
+---
+
+## Architecture
+
+```
+Proxmox Host
+    └── Ubuntu 24.04 Template (cloud-init)
+        ├── k8s-master (control plane)
+        └── k8s-worker-[1..N] (worker nodes)
 ```
 
-4. Preview changes:
+VMs are provisioned via Terraform with cloud-init for initial configuration, then Ansible handles K8s-specific setup including containerd installation, kubeadm initialization, and worker node joining.
 
-```bash
-terraform plan
-```
+---
 
-5. Apply changes to deploy VMs:
+## Design Decisions
 
-```bash
-terraform apply
-```
+**Ubuntu over Talos**: Hands-on learning - setting up K8s from scratch, troubleshooting issues, and building transferable skills beyond a single opinionated distro.
+
+**No rollback/DR**: Built for initial provisioning, not drift management. If setup fails, tear down and restart.
+
+**Manual template creation**: One-time setup doesn't warrant automation. Also provides practice with Proxmox `qm` commands.
