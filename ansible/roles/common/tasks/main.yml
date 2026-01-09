@@ -1,0 +1,12 @@
+- name: Disable swap temporarily
+  command: swapoff -a
+  register: swapoff_result
+  when: ansible_facts["swaptotal_mb"] > 0
+  changed_when: swapoff_result.rc == 0
+
+- name: Comment out swap entries in /etc/fstab
+  replace:
+    path: /etc/fstab
+    regexp: "^([^#].*swap.*)$"
+    replace: '# \1'
+    backup: yes

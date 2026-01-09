@@ -1,0 +1,46 @@
+- name: Initialize kubeadm master
+  command: kubeadm init --pod-network-cidr={{ pod_network_cidr }}
+  args:
+    creates: /etc/kubernetes/admin.conf
+  register: kubeadm_init
+
+- name: Create .kube directory for {{ k8s_admin_user }}
+  file:
+    path: /home/{{ k8s_admin_user }}/.kube
+    state: directory
+    owner: "{{ k8s_admin_user }}"
+    group: "{{ k8s_admin_user }}"
+    mode: "0700"
+
+- name: Copy kubeconfig to {{ k8s_admin_user }}
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/{{ k8s_admin_user }}/.kube/config
+    owner: "{{ k8s_admin_user }}"
+    group: "{{ k8s_admin_user }}"
+    mode: "0600"
+    remote_src: yes
+
+- name: Deploy Flannel CNI
+  shell: kubectl apply -f {{ cni_manifest_url }} --kubeconfig /home/{{ k8s_admin_user }}/.kube/config
+  register: cni_apply
+  retries: 5
+  delay: 15
+  until: cni_apply.rc == 0
+
+- name: Wait for node to become Ready
+  shell: kubectl wait --for=condition=Ready node {{ inventory_hostname }} --kubeconfig /home/{{ k8s_admin_user }}/.kube/config --timeout=180s
+  register: node_ready
+  retries: 20
+  delay: 10
+  until: node_ready.rc == 0
+
+- name: Save kubeadm join command
+  shell: kubeadm token create --print-join-command --kubeconfig /home/{{ k8s_admin_user }}/.kube/config
+  register: join_command
+
+- name: Write join command to file
+  copy:
+    content: "{{ join_command.stdout }}"
+    dest: /tmp/kube_join_cmd.sh
+    mode: "0700"

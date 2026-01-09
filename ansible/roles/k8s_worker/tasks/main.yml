@@ -1,0 +1,12 @@
+- name: Copy kubeadm join command to worker
+  copy:
+    content: "{{ hostvars[groups['k8s_master'][0]]['join_command'].stdout }}"
+    dest: /tmp/kube_join_cmd.sh
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Run kubeadm join
+  command: sh /tmp/kube_join_cmd.sh
+  args:
+    creates: /etc/kubernetes/kubelet.conf

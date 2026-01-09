@@ -5,6 +5,15 @@
 *.tfvars
 *.tfstate.lock.info
 
+# Ansible
+**/inventory.ini
+*.retry
+*.log/
+**/tmp/
+
 # Editor/backup files
 *.swp
 *.bak
+
+# IDE
+**/.idea/

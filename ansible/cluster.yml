@@ -1,0 +1,16 @@
+- hosts: k8s_nodes
+  become: yes
+  roles:
+    - common
+    - containerd
+    - k8s_prereqs
+
+- hosts: k8s_master
+  become: yes
+  roles:
+    - k8s_master
+
+- hosts: k8s_workers
+  become: yes
+  roles:
+    - k8s_worker
