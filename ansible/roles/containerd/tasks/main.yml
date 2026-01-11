@@ -3,21 +3,25 @@
     name: containerd
     state: present
     update_cache: yes
+
 - name: Ensure containerd config dir exists
   file:
     path: /etc/containerd
     state: directory
+
 - name: Generate default containerd config if missing
   shell: containerd config default | tee /etc/containerd/config.toml
   args:
     creates: /etc/containerd/config.toml
     executable: /bin/bash
+  notify: restart containerd
 
 - name: Set SystemdCgroup = true for Kubernetes compatibility
   replace:
     path: /etc/containerd/config.toml
-    regexp: "SystemdCgroup = false"
+    regexp: '^\s*SystemdCgroup\s*=\s*false'
     replace: "SystemdCgroup = true"
+  notify: restart containerd
 
 - name: Ensure required kernel modules
   copy:
@@ -44,10 +48,3 @@
     - { name: net.ipv4.ip_forward, value: "1" }
     - { name: net.bridge.bridge-nf-call-iptables, value: "1" }
     - { name: net.bridge.bridge-nf-call-ip6tables, value: "1" }
-
-- name: Reload systemd and restart containerd
-  systemd:
-    name: containerd
-    state: restarted
-    enabled: yes
-    daemon_reload: yes

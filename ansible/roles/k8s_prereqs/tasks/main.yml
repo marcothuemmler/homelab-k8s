@@ -1,10 +1,6 @@
 - name: Ensure apt packages for Kubernetes repo
   apt:
-    name:
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - gpg
+    name: "{{ k8s_prereqs }}"
     state: present
     update_cache: yes
 
@@ -14,12 +10,12 @@
     state: directory
     mode: "0755"
 
-- name: Download Kubernetes APT key and save as GPG keyring
-  become: true
-  shell: |
-    curl -fsSL {{ k8s_repo_url }}Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-  args:
-    creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+- name: Add Kubernetes APT key
+  ansible.builtin.apt_key:
+    url: "{{ k8s_repo_url }}Release.key"
+    keyring: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    state: present
+    validate_certs: yes
 
 - name: Add Kubernetes APT repository
   copy:

@@ -2,7 +2,7 @@
   command: swapoff -a
   register: swapoff_result
   when: ansible_facts["swaptotal_mb"] > 0
-  changed_when: swapoff_result.rc == 0
+  changed_when: ansible_facts["swaptotal_mb"] > 0
 
 - name: Comment out swap entries in /etc/fstab
   replace:
