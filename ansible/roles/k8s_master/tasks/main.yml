@@ -21,22 +21,26 @@
     mode: "0600"
     remote_src: yes
 
-- name: Deploy Flannel CNI
-  shell: kubectl apply -f {{ cni_manifest_url }} --kubeconfig /home/{{ k8s_admin_user }}/.kube/config
+- name: Deploy CNI
+  command: kubectl apply -f {{ cni_manifest_url }}
+  become: yes
+  become_user: "{{ k8s_admin_user }}"
   register: cni_apply
   retries: 5
   delay: 15
   until: cni_apply.rc == 0
 
 - name: Wait for node to become Ready
-  shell: kubectl wait --for=condition=Ready node {{ inventory_hostname }} --kubeconfig /home/{{ k8s_admin_user }}/.kube/config --timeout=180s
+  command: kubectl wait --for=condition=Ready node {{ inventory_hostname }} --timeout=180s
+  become: yes
+  become_user: "{{ k8s_admin_user }}"
   register: node_ready
   retries: 20
   delay: 10
   until: node_ready.rc == 0
 
 - name: Save kubeadm join command
-  shell: kubeadm token create --print-join-command --kubeconfig /home/{{ k8s_admin_user }}/.kube/config
+  command: kubeadm token create --print-join-command
   register: join_command
 
 - name: Write join command to file

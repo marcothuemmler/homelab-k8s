@@ -11,7 +11,7 @@
     mode: "0755"
 
 - name: Add Kubernetes APT key
-  ansible.builtin.apt_key:
+  apt_key:
     url: "{{ k8s_repo_url }}Release.key"
     keyring: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     state: present
@@ -35,8 +35,10 @@
     state: present
 
 - name: Hold Kubernetes packages
-  command: apt-mark hold kubelet kubeadm kubectl
-  changed_when: false
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop: "{{ k8s_packages }}"
 
 - name: Enable kubelet service
   systemd:

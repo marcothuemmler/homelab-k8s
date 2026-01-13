@@ -10,3 +10,21 @@
     regexp: "^([^#].*swap.*)$"
     replace: '# \1'
     backup: yes
+
+- name: hushlogin
+  file:
+    path: .hushlogin
+    state: touch
+    owner: "{{ k8s_admin_user }}"
+    group: "{{ k8s_admin_user }}"
+    mode: '0644'
+
+- name: Add kubectl alias
+  lineinfile:
+    path: .bashrc
+    line: "alias k='kubectl'"
+    state: present
+    create: yes
+    owner: "{{ k8s_admin_user }}"
+    group: "{{ k8s_admin_user }}"
+    mode: '0644'

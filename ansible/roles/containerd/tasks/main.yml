@@ -10,11 +10,18 @@
     state: directory
 
 - name: Generate default containerd config if missing
-  shell: containerd config default | tee /etc/containerd/config.toml
+  command: containerd config default
+  register: containerd_config
   args:
     creates: /etc/containerd/config.toml
-    executable: /bin/bash
-  notify: restart containerd
+
+- name: Write config
+  copy:
+    content: "{{ containerd_config.stdout }}"
+    dest: /etc/containerd/config.toml
+    owner: root
+    group: root
+    mode: "0644"
 
 - name: Set SystemdCgroup = true for Kubernetes compatibility
   replace:
