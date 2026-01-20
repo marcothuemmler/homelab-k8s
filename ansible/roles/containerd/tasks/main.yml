@@ -1,22 +1,22 @@
 - name: Install containerd
-  apt:
+  ansible.builtin.apt:
     name: containerd
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Ensure containerd config dir exists
-  file:
+  ansible.builtin.file:
     path: /etc/containerd
     state: directory
 
 - name: Generate default containerd config if missing
-  command: containerd config default
+  ansible.builtin.command: containerd config default
   register: containerd_config
   args:
     creates: /etc/containerd/config.toml
 
 - name: Write config
-  copy:
+  ansible.builtin.copy:
     content: "{{ containerd_config.stdout }}"
     dest: /etc/containerd/config.toml
     owner: root
@@ -24,21 +24,21 @@
     mode: "0644"
 
 - name: Set SystemdCgroup = true for Kubernetes compatibility
-  replace:
+  ansible.builtin.replace:
     path: /etc/containerd/config.toml
     regexp: '^\s*SystemdCgroup\s*=\s*false'
     replace: "SystemdCgroup = true"
-  notify: restart containerd
+  notify: Restart containerd
 
 - name: Ensure required kernel modules
-  copy:
+  ansible.builtin.copy:
     dest: /etc/modules-load.d/containerd.conf
     content: |
       overlay
       br_netfilter
 
 - name: Load kernel modules
-  modprobe:
+  community.general.modprobe:
     name: "{{ item }}"
     state: present
   loop:
@@ -46,11 +46,11 @@
     - br_netfilter
 
 - name: Enable IP forwarding and bridge netfilter
-  sysctl:
+  ansible.builtin.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
     state: present
-    reload: yes
+    reload: true
   loop:
     - { name: net.ipv4.ip_forward, value: "1" }
     - { name: net.bridge.bridge-nf-call-iptables, value: "1" }

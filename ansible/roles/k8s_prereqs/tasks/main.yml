@@ -1,24 +1,24 @@
 - name: Ensure apt packages for Kubernetes repo
-  apt:
+  ansible.builtin.apt:
     name: "{{ k8s_prereqs }}"
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Create apt keyrings directory
-  file:
+  ansible.builtin.file:
     path: /etc/apt/keyrings
     state: directory
     mode: "0755"
 
 - name: Add Kubernetes APT key
-  apt_key:
+  ansible.builtin.apt_key:
     url: "{{ k8s_repo_url }}Release.key"
     keyring: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     state: present
-    validate_certs: yes
+    validate_certs: true
 
 - name: Add Kubernetes APT repository
-  copy:
+  ansible.builtin.copy:
     dest: /etc/apt/sources.list.d/kubernetes.list
     content: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] {{ k8s_repo_url }} /"
     owner: root
@@ -26,22 +26,22 @@
     mode: "0644"
 
 - name: Update apt cache
-  apt:
-    update_cache: yes
+  ansible.builtin.apt:
+    update_cache: true
 
 - name: Install kubeadm, kubelet, kubectl
-  apt:
+  ansible.builtin.apt:
     name: "{{ k8s_packages }}"
     state: present
 
 - name: Hold Kubernetes packages
-  dpkg_selections:
+  ansible.builtin.dpkg_selections:
     name: "{{ item }}"
     selection: hold
   loop: "{{ k8s_packages }}"
 
 - name: Enable kubelet service
-  systemd:
+  ansible.builtin.systemd:
     name: kubelet
-    enabled: yes
+    enabled: true
     state: started

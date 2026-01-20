@@ -1,11 +1,11 @@
 - name: Initialize kubeadm master
-  command: kubeadm init --pod-network-cidr={{ pod_network_cidr }}
+  ansible.builtin.command: kubeadm init --pod-network-cidr={{ pod_network_cidr }}
   args:
     creates: /etc/kubernetes/admin.conf
   register: kubeadm_init
 
 - name: Create .kube directory for {{ k8s_admin_user }}
-  file:
+  ansible.builtin.file:
     path: /home/{{ k8s_admin_user }}/.kube
     state: directory
     owner: "{{ k8s_admin_user }}"
@@ -13,38 +13,41 @@
     mode: "0700"
 
 - name: Copy kubeconfig to {{ k8s_admin_user }}
-  copy:
+  ansible.builtin.copy:
     src: /etc/kubernetes/admin.conf
     dest: /home/{{ k8s_admin_user }}/.kube/config
     owner: "{{ k8s_admin_user }}"
     group: "{{ k8s_admin_user }}"
     mode: "0600"
-    remote_src: yes
+    remote_src: true
 
 - name: Deploy CNI
-  command: kubectl apply -f {{ cni_manifest_url }}
-  become: yes
+  ansible.builtin.command: kubectl apply -f {{ cni_manifest_url }}
+  become: true
   become_user: "{{ k8s_admin_user }}"
   register: cni_apply
   retries: 5
   delay: 15
   until: cni_apply.rc == 0
+  changed_when: "'configured' in cni_apply.stdout or 'created' in cni_apply.stdout"
 
 - name: Wait for node to become Ready
-  command: kubectl wait --for=condition=Ready node {{ inventory_hostname }} --timeout=180s
-  become: yes
+  ansible.builtin.command: kubectl wait --for=condition=Ready node {{ inventory_hostname }} --timeout=180s
+  become: true
   become_user: "{{ k8s_admin_user }}"
   register: node_ready
   retries: 20
   delay: 10
   until: node_ready.rc == 0
+  changed_when: false
 
 - name: Save kubeadm join command
-  command: kubeadm token create --print-join-command
+  ansible.builtin.command: kubeadm token create --print-join-command
   register: join_command
+  changed_when: false
 
 - name: Write join command to file
-  copy:
+  ansible.builtin.copy:
     content: "{{ join_command.stdout }}"
     dest: /tmp/kube_join_cmd.sh
     mode: "0700"

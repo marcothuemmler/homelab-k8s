@@ -1,18 +1,18 @@
 - name: Disable swap temporarily
-  command: swapoff -a
-  register: swapoff_result
+  ansible.builtin.command: swapoff -a
+  register: common_swapoff_result
   when: ansible_facts["swaptotal_mb"] > 0
   changed_when: ansible_facts["swaptotal_mb"] > 0
 
 - name: Comment out swap entries in /etc/fstab
-  replace:
+  ansible.builtin.replace:
     path: /etc/fstab
     regexp: "^([^#].*swap.*)$"
     replace: '# \1'
-    backup: yes
+    backup: true
 
-- name: hushlogin
-  file:
+- name: Create .hushlogin
+  ansible.builtin.file:
     path: .hushlogin
     state: touch
     owner: "{{ k8s_admin_user }}"
@@ -20,11 +20,11 @@
     mode: '0644'
 
 - name: Add kubectl alias
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: .bashrc
     line: "alias k='kubectl'"
     state: present
-    create: yes
+    create: true
     owner: "{{ k8s_admin_user }}"
     group: "{{ k8s_admin_user }}"
     mode: '0644'

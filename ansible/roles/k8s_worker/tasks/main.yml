@@ -1,5 +1,5 @@
 - name: Copy kubeadm join command to worker
-  copy:
+  ansible.builtin.copy:
     content: "{{ hostvars[groups['k8s_master'][0]]['join_command'].stdout }}"
     dest: /tmp/kube_join_cmd.sh
     owner: root
@@ -7,6 +7,6 @@
     mode: "0700"
 
 - name: Run kubeadm join
-  command: sh /tmp/kube_join_cmd.sh
+  ansible.builtin.command: sh /tmp/kube_join_cmd.sh
   args:
     creates: /etc/kubernetes/kubelet.conf
