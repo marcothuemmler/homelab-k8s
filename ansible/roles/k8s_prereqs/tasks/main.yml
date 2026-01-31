@@ -36,7 +36,7 @@
 
 - name: Hold Kubernetes packages
   ansible.builtin.dpkg_selections:
-    name: "{{ item }}"
+    name: "{{ item.split('=')[0] }}"
     selection: hold
   loop: "{{ k8s_packages }}"
 
