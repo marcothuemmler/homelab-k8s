@@ -45,9 +45,3 @@
   ansible.builtin.command: kubeadm token create --print-join-command
   register: join_command
   changed_when: false
-
-- name: Write join command to file
-  ansible.builtin.copy:
-    content: "{{ join_command.stdout }}"
-    dest: /tmp/kube_join_cmd.sh
-    mode: "0700"

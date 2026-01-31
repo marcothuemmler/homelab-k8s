@@ -8,6 +8,9 @@
   ansible.builtin.file:
     path: /etc/containerd
     state: directory
+    owner: root
+    group: root
+    mode: '0755'
 
 - name: Generate default containerd config if missing
   ansible.builtin.command: containerd config default
@@ -36,6 +39,9 @@
     content: |
       overlay
       br_netfilter
+    owner: root
+    group: root
+    mode: "0644"
 
 - name: Load kernel modules
   community.general.modprobe:
@@ -46,7 +52,7 @@
     - br_netfilter
 
 - name: Enable IP forwarding and bridge netfilter
-  ansible.builtin.sysctl:
+  ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
     state: present
