@@ -1,20 +1,8 @@
-![Proxmox VE](https://img.shields.io/badge/Proxmox%20VE-9.0.11-FF0000?logo=proxmox&logoColor=white)
-![Terraform](https://img.shields.io/badge/Terraform-1.14-623CE6?logo=terraform&logoColor=white)
-![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04-orange?logo=ubuntu&logoColor=white)
+# Terraform Configuration
 
-# Proxmox Terraform Config
-
-This repo contains Terraform and shell scripts for provisioning Ubuntu 24.04 VMs in a Proxmox environment.  
-
-It automates:
-
-* Creating a reusable cloud-init template
-* Deploying VMs from that template via Terraform
-* Automated setup using cloud-init
+Provisions K8s node VMs from Ubuntu 24.04 cloud-init templates on Proxmox VE.
 
 *Workflow:* `Ubuntu cloud image → cloud-init template → Terraform → Proxmox VMs`
-
-See [Terraform docs](https://developer.hashicorp.com/terraform/docs) and [cloud-init docs](https://cloudinit.readthedocs.io/en/latest/) for more details.
 
 ---
 
@@ -42,30 +30,46 @@ This will:
 
 ---
 
+## Configuration
+
+**Resources:**
+* `proxmox_vm_qemu` - VM instances cloned from template with cloud-init customization
+
+**Key Variables:**
+* `vms` - Map of VM configurations with optional defaults (memory: 2048MB, CPU: 2 cores, disk: 20G)
+* `pm_api_token_id` / `pm_api_token_secret` - Proxmox API credentials (marked sensitive)
+* `gateway_ip` - Default gateway for static IP configuration
+* `sshkeys` - Public SSH keys injected via cloud-init
+
+**Outputs:**
+* `vm_ips` - Map of VM names to IPv4 addresses
+
+---
+
 ## Deploying VMs with Terraform
 
 1. Copy the example variables file:
 
-```bash
-cp terraform.tfvars.example terraform.tfvars
-```
+    ```bash
+    cp terraform.tfvars.example terraform.tfvars
+    ```
 
 2. Fill in your **Proxmox API token**, gateway IP, SSH keys, and VM details in `terraform.tfvars`.
 
 3. Initialize Terraform:
 
-```bash
-terraform init
-```
+    ```bash
+    terraform init
+    ```
 
 4. Preview changes:
 
-```bash
-terraform plan
-```
+    ```bash
+    terraform plan
+    ```
 
 5. Apply changes to deploy VMs:
 
-```bash
-terraform apply
-```
+    ```bash
+    terraform apply
+    ```

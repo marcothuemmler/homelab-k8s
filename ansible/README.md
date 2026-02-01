@@ -18,24 +18,24 @@ The main playbook (`cluster.yml`) configures all nodes with containerd and K8s c
 
 1. Copy the example inventory:
 
-```bash
-cp inventory.ini.example inventory.ini
-```
+    ```bash
+    cp inventory.ini.example inventory.ini
+    ```
 
 2. Edit `inventory.ini` with your VM IPs:
 
-```ini
-[k8s_master]
-k8s-master ansible_host=192.168.1.10
-
-[k8s_workers]
-k8s-worker1 ansible_host=192.168.1.11
-k8s-worker2 ansible_host=192.168.1.12
-
-[k8s_nodes:children]
-k8s_master
-k8s_workers
-```
+    ```ini
+    [k8s_master]
+    k8s-master ansible_host=192.168.1.10
+    
+    [k8s_workers]
+    k8s-worker1 ansible_host=192.168.1.11
+    k8s-worker2 ansible_host=192.168.1.12
+    
+    [k8s_nodes:children]
+    k8s_master
+    k8s_workers
+    ```
 
 ---
 
@@ -54,6 +54,7 @@ ansible-playbook cluster.yml
 ```
 
 Verify deployment:
+
 ```bash
 kubectl get nodes
 ```
