@@ -4,27 +4,27 @@
     creates: /etc/kubernetes/admin.conf
   register: kubeadm_init
 
-- name: Create .kube directory for {{ k8s_admin_user }}
+- name: Create .kube directory for {{ ansible_user }}
   ansible.builtin.file:
-    path: /home/{{ k8s_admin_user }}/.kube
+    path: /home/{{ ansible_user }}/.kube
     state: directory
-    owner: "{{ k8s_admin_user }}"
-    group: "{{ k8s_admin_user }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: "0700"
 
-- name: Copy kubeconfig to {{ k8s_admin_user }}
+- name: Copy kubeconfig to {{ ansible_user }}
   ansible.builtin.copy:
     src: /etc/kubernetes/admin.conf
-    dest: /home/{{ k8s_admin_user }}/.kube/config
-    owner: "{{ k8s_admin_user }}"
-    group: "{{ k8s_admin_user }}"
+    dest: /home/{{ ansible_user }}/.kube/config
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: "0600"
     remote_src: true
 
 - name: Deploy CNI
   ansible.builtin.command: kubectl apply -f {{ cni_manifest_url }}
   become: true
-  become_user: "{{ k8s_admin_user }}"
+  become_user: "{{ ansible_user }}"
   register: cni_apply
   retries: 5
   delay: 15
@@ -34,7 +34,7 @@
 - name: Wait for node to become Ready
   ansible.builtin.command: kubectl wait --for=condition=Ready node {{ inventory_hostname }} --timeout=180s
   become: true
-  become_user: "{{ k8s_admin_user }}"
+  become_user: "{{ ansible_user }}"
   register: node_ready
   retries: 20
   delay: 10

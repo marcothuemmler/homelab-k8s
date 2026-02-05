@@ -15,6 +15,8 @@ resource "proxmox_vm_qemu" "vm" {
   scsihw   = "virtio-scsi-pci"
   bootdisk = "scsi0"
 
+  start_at_node_boot = true
+
   cpu {
     cores   = each.value.cpu_cores
     sockets = each.value.cpu_sockets

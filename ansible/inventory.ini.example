@@ -12,4 +12,3 @@ k8s_workers
 [k8s_nodes:vars]
 ansible_become=true
 ansible_user=ubuntu
-k8s_admin_user=ubuntu

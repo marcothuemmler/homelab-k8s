@@ -15,8 +15,8 @@
   ansible.builtin.file:
     path: .hushlogin
     state: touch
-    owner: "{{ k8s_admin_user }}"
-    group: "{{ k8s_admin_user }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: '0644'
 
 - name: Add kubectl alias
@@ -25,6 +25,6 @@
     line: "alias k='kubectl'"
     state: present
     create: true
-    owner: "{{ k8s_admin_user }}"
-    group: "{{ k8s_admin_user }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: '0644'

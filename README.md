@@ -34,14 +34,19 @@ This project automates Kubernetes infrastructure provisioning in a Proxmox homel
 
 ```
 .
-├── terraform/          # VM provisioning with Terraform
-│   ├── main.tf         # VM resource definitions
-│   ├── variables.tf    # Input variables
-│   └── README.md       # Detailed Terraform docs
+├── Makefile            # Automation commands
+├── terraform/          # VM provisioning
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   ├── providers.tf
+│   └── README.md
 └── ansible/            # K8s cluster configuration
-    ├── cluster.yml     # Main playbook
-    ├── roles/          # Ansible roles (common, containerd, k8s)
-    └── README.md       # Detailed Ansible docs
+    ├── cluster.yml
+    ├── preflight.yml
+    ├── inventory.ini
+    ├── roles/
+    └── README.md
 ```
 
 ---
