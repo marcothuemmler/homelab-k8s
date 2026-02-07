@@ -23,12 +23,6 @@
     name: kubeadm
     selection: hold
 
-- name: Drain control plane node
-  ansible.builtin.command: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-emptydir-data --force
-  become: true
-  become_user: "{{ ansible_user }}"
-  when: groups['k8s_master'] | length > 1
-
 - name: Apply upgrade
   ansible.builtin.command: kubeadm upgrade apply stable-{{ k8s_version }} -y
 
@@ -70,15 +64,7 @@
   delay: 10
   until: kubectl_check.rc == 0
 
-- name: Check if node is cordoned
-  ansible.builtin.command: kubectl get node {{ inventory_hostname }} -o jsonpath='{.spec.unschedulable}'
-  become: true
-  become_user: "{{ ansible_user }}"
-  register: node_cordoned
-  failed_when: false
-
 - name: Uncordon control plane node
   ansible.builtin.command: kubectl uncordon {{ inventory_hostname }}
   become: true
   become_user: "{{ ansible_user }}"
-  when: node_cordoned.stdout == "true"
