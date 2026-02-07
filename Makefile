@@ -1,4 +1,4 @@
-.PHONY: all init plan apply preflight deploy clean
+.PHONY: all init plan apply preflight deploy clean upgrade
 
 all: apply deploy
 
@@ -19,3 +19,6 @@ deploy: preflight
 
 clean:
 	cd terraform && terraform destroy -auto-approve
+
+upgrade:
+	cd ansible && ansible-playbook upgrade.yml

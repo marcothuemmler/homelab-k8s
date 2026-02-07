@@ -42,7 +42,8 @@ This project automates Kubernetes infrastructure provisioning in a Proxmox homel
 │   ├── providers.tf
 │   └── README.md
 └── ansible/            # K8s cluster configuration
-    ├── cluster.yml
+    ├── cluster.yml     # Initial deployment
+    ├── upgrade.yml     # Version upgrades
     ├── preflight.yml
     ├── inventory.ini
     ├── roles/
@@ -66,6 +67,7 @@ make init          # Initialize Terraform
 make apply         # Provision VMs
 make preflight     # Verify SSH connectivity
 make deploy        # Deploy K8s cluster
+make upgrade       # Upgrade K8s cluster to newer version
 make clean         # Destroy all infrastructure
 ```
 
@@ -89,7 +91,7 @@ cloud-init (SSH keys, network config, user setup)
   ↓
 Ansible configures all nodes (swap, kernel modules, containerd)
   ↓
-kubeadm init on master node
+kubeadm init on control plane
   ↓
 CNI deployment
   ↓
@@ -105,7 +107,5 @@ Token-based worker join
 **Ubuntu over Talos**: Direct experience with K8s components (kubeadm, kubelet, containerd), kernel tuning, and troubleshooting at the OS level. Talos abstracts these away.
 
 **Infrastructure-only scope**: Stops at functional K8s nodes with pod networking. Clean separation of infrastructure and platform layers.
-
-**Immutable infrastructure approach**: Failures trigger full teardown and redeploy rather than state reconciliation. Optimized for reproducibility over in-place repair.
 
 **Manual template creation**: One-time setup doesn't warrant automation complexity.

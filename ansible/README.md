@@ -53,6 +53,13 @@ Deploy the cluster:
 ansible-playbook cluster.yml
 ```
 
+Upgrade the cluster to a newer K8s version:
+
+```bash
+# Update k8s_version in group_vars/all.yml first
+ansible-playbook upgrade.yml
+```
+
 Verify deployment:
 
 ```bash
@@ -63,15 +70,35 @@ kubectl get nodes
 
 ## Playbook Structure
 
-`cluster.yml` applies these roles in sequence:
+### cluster.yml - Initial Deployment
+
+Applies these roles in sequence:
 
 **All nodes:**
 - `common` - Disables swap and configures system settings
 - `containerd` - Installs and configures container runtime
 - `k8s_prereqs` - Installs kubeadm, kubelet, kubectl
 
-**Master node:**
+**Control plane:**
 - `k8s_master` - Runs kubeadm init and sets up pod network
 
 **Worker nodes:**
 - `k8s_worker` - Joins workers to the cluster using the token from master
+
+### upgrade.yml - Version Upgrades
+
+Applies these roles in sequence (one node at a time):
+
+**Control plane:**
+- `upgrade_control_plane` - Drains node, upgrades kubeadm/kubelet/kubectl, applies upgrade, uncordons
+
+**Worker nodes:**
+- `upgrade_worker` - Drains node, upgrades kubeadm/kubelet/kubectl, applies node upgrade, uncordons
+
+## Configuration
+
+**Key variables** (`group_vars/all.yml`):
+- `k8s_version` - Kubernetes version (e.g., "1.35")
+- `k8s_repo_url` - APT repository URL for K8s packages
+- `pod_network_cidr` - Pod network CIDR (default: 10.244.0.0/16)
+- `cni_manifest_url` - CNI manifest URL

@@ -1,0 +1,13 @@
+- name: Upgrade Kubernetes Control Plane
+  hosts: k8s_master
+  become: true
+  serial: 1
+  roles:
+    - upgrade_control_plane
+
+- name: Upgrade Kubernetes Worker Nodes
+  hosts: k8s_workers
+  become: true
+  serial: 1
+  roles:
+    - upgrade_worker

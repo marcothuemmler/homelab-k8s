@@ -1,3 +1,4 @@
 k8s_version: "1.35"
+k8s_repo_url: "https://pkgs.k8s.io/core:/stable:/v{{ k8s_version }}/deb/"
 pod_network_cidr: "10.244.0.0/16"
 cni_manifest_url: "https://github.com/flannel-io/flannel/releases/download/v0.28.0/kube-flannel.yml"
