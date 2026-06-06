@@ -11,9 +11,9 @@ resource "proxmox_vm_qemu" "vm" {
   sshkeys   = var.sshkeys
   ipconfig0 = "ip=${each.value.ip},gw=${var.gateway_ip}"
 
-  memory   = each.value.memory
-  scsihw   = "virtio-scsi-pci"
-  bootdisk = "scsi0"
+  memory = each.value.memory
+  scsihw = "virtio-scsi-pci"
+  boot   = "order=scsi0"
 
   start_at_node_boot = true
 
@@ -45,5 +45,12 @@ resource "proxmox_vm_qemu" "vm" {
     model    = "virtio"
     bridge   = "vmbr0"
     firewall = true
+  }
+
+  # 
+  startup_shutdown {
+    order            = -1
+    shutdown_timeout = -1
+    startup_delay    = -1
   }
 }
